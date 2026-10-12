@@ -11,7 +11,13 @@ import OrderConfirmationModal from './components/OrderConfirmationModal';
 export default function App() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [cart, setCart] = useState([]);
+  
+  const [cart, setCart] = useState(() => {
+    const savedCart = localStorage.getItem('mystreet_cart');
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
+  const [selectedBrand, setSelectedBrand] = useState('ALL');
+  const [selectedSizeFilter, setSelectedSizeFilter] = useState('ALL');
   
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [checkoutError, setCheckoutError] = useState(''); // For checkout errors
@@ -36,6 +42,10 @@ export default function App() {
     loadCatalog();
   }, []);
  
+  useEffect(() => {
+    localStorage.setItem('mystreet_cart', JSON.stringify(cart));
+  }, [cart]);
+
   const handleSelectProduct = (product) => {
     setSelectedProduct(product);
     setIsDetailOpen(true);
@@ -109,6 +119,15 @@ export default function App() {
     setIsOrdersOpen(true);
   };
  
+  const filteredProducts = products.filter(product => {
+    const matchesBrand = selectedBrand === 'ALL' || product.brand === selectedBrand;
+    const matchesSize = selectedSizeFilter === 'ALL' || (product.sizesCsv && product.sizesCsv.includes(selectedSizeFilter));
+    return matchesBrand && matchesSize;
+  });
+
+  const uniqueBrands = ['ALL', ...new Set(products.map(p => p.brand))];
+  const uniqueSizes = ['ALL', '6', '7', '8', '9', '10', '11', 'Standard'];
+
   return (
     <div style={{ fontFamily: 'Arial, sans-serif', backgroundColor: '#f9f9f9', minHeight: '100vh', margin: 0, paddingBottom: '50px' }}>
       <Navbar
@@ -124,12 +143,28 @@ export default function App() {
         <h2 style={{ color: '#2c3e50', borderBottom: '2px solid #eaeaea', paddingBottom: '10px' }}>
           Product Catalog
         </h2>
+
+        {/* Filter Dropdown Bar */}
+        <div style={{ display: 'flex', gap: '15px', margin: '20px 0', backgroundColor: 'white', padding: '15px', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.05)' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', marginBottom: '5px', color: '#555' }}>Filter by Brand:</label>
+            <select value={selectedBrand} onChange={(e) => setSelectedBrand(e.target.value)} style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc', minWidth: '150px' }}>
+              {uniqueBrands.map(brand => <option key={brand} value={brand}>{brand}</option>)}
+            </select>
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', marginBottom: '5px', color: '#555' }}>Filter by Size:</label>
+            <select value={selectedSizeFilter} onChange={(e) => setSelectedSizeFilter(e.target.value)} style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc', minWidth: '150px' }}>
+              {uniqueSizes.map(size => <option key={size} value={size}>{size}</option>)}
+            </select>
+          </div>
+        </div>
  
         {loading ? (
           <p style={{ color: '#e67e22', fontSize: '18px' }}>Loading products from Spring Boot & H2 database...</p>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '25px', marginTop: '20px' }}>
-            {products.map(product => (
+            {filteredProducts.map(product => (
               <ProductCard key={product.id} product={product} onSelectProduct={handleSelectProduct} />
             ))}
           </div>

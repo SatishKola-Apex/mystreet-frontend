@@ -215,7 +215,7 @@ const handleDeleteProduct = async (productId) => {
  
       <main style={{ maxWidth: '1100px', margin: '30px auto', padding: '0 20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #eaeaea', paddingBottom: '10px', marginBottom: '20px' }}>
-          <h2 style={{ color: '#2c3e50', borderBottom: '2px solid #eaeaea', paddingBottom: '10px' }}>
+          <h2 style={{ color: '#2c3e50', paddingBottom: '10px' }}>
             Product Catalog
           </h2>
 

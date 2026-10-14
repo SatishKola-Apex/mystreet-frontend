@@ -31,7 +31,8 @@ export default function Navbar({ cartCount, onOpenCart, onOpenOrders, currentUse
         {currentUser ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginLeft: '10px', borderLeft: '1px solid #7f8c8d', paddingLeft: '15px' }}>
             <span style={{ fontSize: '14px', fontWeight: '500' }}>
-              👤 {currentUser.email ? currentUser.email.split('@')[0] : 'User'} 
+              <span style={{ backgroundColor: '#ffffff', color: '#111827', padding: '2px 6px', borderRadius: '50%', fontSize: '12px' }}>👤</span> 
+              {currentUser.email ? currentUser.email.split('@')[0] : 'User'} 
               {currentUser.admin && <span style={{ backgroundColor: '#e67e22', padding: '2px 6px', borderRadius: '4px', fontSize: '10px', marginLeft: '5px' }}>ADMIN</span>}
             </span>
             <button

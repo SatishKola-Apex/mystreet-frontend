@@ -11,7 +11,7 @@ export default function OrderConfirmationModal({ isOpen, onClose, orderDetails }
         boxShadow: '0 5px 15px rgba(0,0,0,0.3)', textAlign: 'center'
       }}>
         <h2 style={{ color: '#27ae60', marginTop: 0 }}>🎉 Order Placed Successfully!</h2>
-        <p style={{ color: '#7f8c8d', fontSize: '14px' }}>Your order has been recorded in the database.</p>
+        {/* <p style={{ color: '#7f8c8d', fontSize: '14px' }}>Your order has been recorded in the database.</p> */}
  
         <div style={{ textAlign: 'left', backgroundColor: '#f9f9f9', padding: '15px', borderRadius: '8px', margin: '20px 0', border: '1px solid #eaeaea' }}>
           <p style={{ margin: '6px 0', fontSize: '13px', color: '#333', wordBreak: 'break-all' }}>

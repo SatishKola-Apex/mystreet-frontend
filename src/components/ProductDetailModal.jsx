@@ -16,6 +16,15 @@ export default function ProductDetailModal({ product, isOpen, onClose, onAddToCa
         backgroundColor: 'white', padding: '30px', borderRadius: '10px', width: '450px',
         boxShadow: '0 5px 15px rgba(0,0,0,0.3)'
       }}>
+
+        <div style={{ height: '200px', overflow: 'hidden', borderRadius: '8px', marginBottom: '15px', backgroundColor: '#f9f9f9' }}>
+          <img
+            src={product.imageUrl || 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400'}
+            alt={product.name}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+        </div>
+
         <h2 style={{ color: '#2c3e50', marginTop: 0 }}>{product.name}</h2>
         <p style={{ color: '#7f8c8d', fontWeight: 'bold', fontSize: '14px' }}>{product.brand}</p>
         <p style={{ color: '#555', fontSize: '14px', lineHeight: '1.5' }}>{product.description}</p>

@@ -17,6 +17,20 @@ export default function App() {
     const savedCart = localStorage.getItem('mystreet_cart');
     return savedCart ? JSON.parse(savedCart) : [];
   });
+
+  const [selectedBrand, setSelectedBrand] = useState('ALL');
+  const [selectedSizeFilter, setSelectedSizeFilter] = useState('ALL');
+ 
+  // Extract unique brands and sizes dynamically from the product catalog
+  const uniqueBrands = ['ALL', ...new Set(products.map(p => p.brand).filter(Boolean))];
+  const uniqueSizes = ['ALL', ...new Set(products.flatMap(p => p.sizesCsv ? p.sizesCsv.split(',').map(s => s.trim()) : []).filter(Boolean))];
+ 
+  // Filter products based on selected dropdown options
+  const filteredProducts = products.filter(product => {
+    const matchesBrand = selectedBrand === 'ALL' || product.brand === selectedBrand;
+    const matchesSize = selectedSizeFilter === 'ALL' || (product.sizesCsv && product.sizesCsv.split(',').map(s => s.trim()).includes(selectedSizeFilter));
+    return matchesBrand && matchesSize;
+  });
   
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [checkoutError, setCheckoutError] = useState(''); // For checkout errors
@@ -213,14 +227,14 @@ const handleDeleteProduct = async (productId) => {
         onOpenAuth={() => setIsAuthModalOpen(true)}
       />
  
-      <main style={{ maxWidth: '1100px', margin: '30px auto', padding: '0 20px' }}>
+      {/* <main style={{ maxWidth: '1100px', margin: '30px auto', padding: '0 20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #eaeaea', paddingBottom: '10px', marginBottom: '20px' }}>
           <h2 style={{ color: '#2c3e50', paddingBottom: '10px' }}>
             Product Catalog
-          </h2>
+          </h2> */}
 
           {/* Admin-only Add product button */}
-          {currentUser?.admin && (
+          {/* {currentUser?.admin && (
             <button 
               onClick={() => {
                 setProductToEdit(null);
@@ -238,7 +252,7 @@ const handleDeleteProduct = async (productId) => {
           <p style={{ color: '#e67e22', fontSize: '18px' }}>Loading products from Spring Boot & H2 database...</p>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '25px', marginTop: '20px' }}>
-            {products.map(product => (
+            {filteredProducts.map(product => (
               <ProductCard 
                 key={product.id} 
                 product={product} 
@@ -253,6 +267,83 @@ const handleDeleteProduct = async (productId) => {
             ))}
           </div>
         )}
+      </main> */}
+
+      <main style={{ maxWidth: '1100px', margin: '30px auto', padding: '0 20px' }}>
+  
+        {/* TOP HEADER: Product Catalog Title & Admin Add Button */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #eaeaea', paddingBottom: '12px', marginBottom: '15px' }}>
+          <h2 style={{ color: '#2c3e50', margin: 0 }}>Product Catalog</h2>
+          
+          {currentUser?.admin && (
+            <button
+              onClick={() => {
+                setProductToEdit(null);
+                setIsAdminModalOpen(true);
+              }}
+              style={{
+                backgroundColor: '#27ae60', color: 'white', border: 'none', padding: '8px 14px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold'
+              }}
+            >
+              + Add New Product
+            </button>
+          )}
+        </div>
+      
+        {/* COMPACT HORIZONTAL FILTER BAR */}
+        <div style={{ display: 'flex', gap: '15px', marginBottom: '20px', alignItems: 'center' }}>
+          
+          {/* Brand Filter Pill */}
+          <div style={{ display: 'flex', alignItems: 'center', background: 'white', padding: '4px 10px', borderRadius: '6px', border: '1px solid #dcdcdc', boxShadow: '0 1px 2px rgba(0,0,0,0.02)' }}>
+            <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#666', marginRight: '6px' }}>Brand:</span>
+            <select
+              value={selectedBrand}
+              onChange={(e) => setSelectedBrand(e.target.value)}
+              style={{ padding: '3px 4px', borderRadius: '4px', border: 'none', fontSize: '12px', background: 'transparent', outline: 'none', cursor: 'pointer', color: '#333' }}
+            >
+              {uniqueBrands.map(brand => <option key={brand} value={brand}>{brand}</option>)}
+            </select>
+          </div>
+      
+          {/* Size Filter Pill */}
+          <div style={{ display: 'flex', alignItems: 'center', background: 'white', padding: '4px 10px', borderRadius: '6px', border: '1px solid #dcdcdc', boxShadow: '0 1px 2px rgba(0,0,0,0.02)' }}>
+            <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#666', marginRight: '6px' }}>Size:</span>
+            <select
+              value={selectedSizeFilter}
+              onChange={(e) => setSelectedSizeFilter(e.target.value)}
+              style={{ padding: '3px 4px', borderRadius: '4px', border: 'none', fontSize: '12px', background: 'transparent', outline: 'none', cursor: 'pointer', color: '#333' }}
+            >
+              {uniqueSizes.map(size => <option key={size} value={size}>{size}</option>)}
+            </select>
+          </div>
+      
+        </div>
+      
+        {/* PRODUCT GRID SECTION */}
+        <div>
+          {loading ? (
+            <p style={{ color: '#e67e22', fontSize: '16px' }}>Loading products from Spring Boot & H2 database...</p>
+          ) : filteredProducts.length === 0 ? (
+            <p style={{ color: '#7f8c8d', fontSize: '14px', padding: '20px', background: 'white', borderRadius: '8px', textAlign: 'center' }}>No sneakers match your selected filters.</p>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '25px' }}>
+              {filteredProducts.map(product => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onSelectProduct={handleSelectProduct}
+                  currentUser={currentUser}
+                  onEdit={(prod) => {
+                    setProductToEdit(prod);
+                    setIsAdminModalOpen(true);
+                  }}
+                  onDelete={handleDeleteProduct}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      
       </main>
  
       <ProductDetailModal

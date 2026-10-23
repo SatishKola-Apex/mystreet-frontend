@@ -27,7 +27,12 @@ export default function ProductCard({ product, onSelectProduct, currentUser, onE
       )}
  
       {/* Main Card Click Container */}
-      <div onClick={() => onSelectProduct(product)} style={{ cursor: 'pointer' }}>
+      <div 
+        onClick={() => {
+          if (product.stockQty <= 0) return;
+          onSelectProduct(product);
+        }}
+        style={{ cursor: product.stockQty <= 0 ? 'not-allowed' : 'pointer' }}>
         
         {/* Top Header: Square Image (Left) + Name/Brand (Right) */}
         <div style={{ display: 'flex', gap: '15px', alignItems: 'flex-start', marginBottom: '15px', textAlign: 'left' }}>
